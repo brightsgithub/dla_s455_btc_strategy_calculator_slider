@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DLA, S455 & BTC Strategy Calculator</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#0b1220;
+      --muted:#94a3b8;
+      --text:#e5e7eb;
+      --brand:#22d3ee;
+      --accent:#a78bfa;
+      --ok:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:linear-gradient(135deg,var(--bg),#020617);
+      color:var(--text);
+    }
+    .wrap{max-width:1120px;margin:32px auto;padding:20px}
+    .card{
+      background:rgba(17,24,39,.82);
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:20px;
+      padding:22px;
+      box-shadow:0 12px 34px rgba(0,0,0,.35);
+      backdrop-filter:blur(8px);
+    }
+    h1{font-size:clamp(24px,3.4vw,34px);margin:0 0 8px}
+    h2{font-size:clamp(18px,2.5vw,24px);margin:22px 0 10px}
+    h3{margin:0 0 8px;font-size:17px}
+    p{line-height:1.5}
+    .lead{margin:0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .col-3{grid-column:span 3}
+    .col-4{grid-column:span 4}
+    .col-6{grid-column:span 6}
+    .col-8{grid-column:span 8}
+    .col-12{grid-column:span 12}
+    label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
+    input,button{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:var(--panel2);
+      color:var(--text);
+      font-size:16px;
+    }
+    input[type=range]{padding:0;border:none;background:transparent}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{cursor:pointer;border:none}
+    .btn-primary{
+      background:linear-gradient(90deg,var(--brand),var(--accent));
+      color:#001018;
+      font-weight:800;
+    }
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.13)}
+    .chip{
+      width:auto;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:var(--panel2);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .chip.active{border-color:var(--accent);background:#1f2a44}
+    .muted{color:var(--muted)}
+    .small{font-size:13px;color:var(--muted);line-height:1.45}
+    .splitLive{color:var(--accent);font-weight:800}
+    .result{
+      background:#0a1426;
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:16px;
+      padding:16px;
+    }
+    .stat{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      padding:8px 0;
+      border-bottom:1px dashed rgba(255,255,255,.08);
+    }
+    .stat:last-child{border-bottom:none}
+    .ok{color:var(--ok)}
+    .warn{color:var(--warn)}
+    .bad{color:var(--bad)}
+    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:right}
+    th:first-child,td:first-child{text-align:left}
+    th{color:#cbd5e1}
+    .table-wrap{overflow-x:auto}
+    footer{margin-top:20px;font-size:12.5px;color:var(--muted);line-height:1.5}
+    .callout{
+      margin-top:14px;
+      border-left:4px solid var(--brand);
+      background:rgba(34,211,238,.06);
+      padding:12px 14px;
+      border-radius:10px;
+      color:#dbeafe;
+    }
+    @media(max-width:900px){
+      .col-3,.col-4,.col-6,.col-8{grid-column:span 12}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>DLA, S455 & BTC Strategy Calculator</h1>
+    <p class="lead">Compare paying your Director's Loan faster versus keeping the DLA payment low and directing the rest of your monthly budget into Bitcoin.</p>
+
+    <h2>1. Current DLA Position</h2>
+    <div class="grid">
+      <div class="col-4">
+        <label for="dla">Starting DLA balance (£)</label>
+        <input id="dla" type="number" step="0.01" value="35380" />
+      </div>
+      <div class="col-4">
+        <label for="lump">Optional one-off DLA payment (£)</label>
+        <input id="lump" type="number" step="0.01" value="0" />
+      </div>
+      <div class="col-4">
+        <label for="startMonth">Start month</label>
+        <input id="startMonth" type="month" />
+      </div>
+    </div>
+
+    <h2>2. Monthly Budget Split</h2>
+    <div class="grid">
+      <div class="col-4">
+        <label for="budget">Total monthly budget (£)</label>
+        <input id="budget" type="number" step="0.01" value="1088.58" />
+      </div>
+      <div class="col-8">
+        <label for="dlaMonthly">Monthly amount to DLA (£)</label>
+        <input id="dlaMonthly" type="number" step="0.01" value="100" />
+        <div class="small" style="margin-top:6px">The remainder of the monthly budget is automatically allocated to BTC.</div>
+      </div>
+      <div class="col-6">
+        <label>Monthly to DLA</label>
+        <div id="monthlyDlaLive" class="splitLive">£100.00</div>
+      </div>
+      <div class="col-6">
+        <label>Monthly to BTC</label>
+        <div id="monthlyBtcLive" class="splitLive">£988.58</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <label for="allocationSlider">DLA ↔ BTC allocation</label>
+      <input id="allocationSlider" type="range" min="0" max="100" step="1" value="9" />
+      <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px">
+        <span class="small">More to BTC</span>
+        <span id="allocationLive" class="splitLive">DLA 9% / BTC 91%</span>
+        <span class="small">More to DLA</span>
+      </div>
+    </div>
+
+    <h2>3. S455 Position</h2>
+    <div class="grid">
+      <div class="col-4">
+        <label for="s455a">Confirmed S455 refund 1 (£)</label>
+        <input id="s455a" type="number" step="0.01" value="6303.70" />
+      </div>
+      <div class="col-4">
+        <label for="s455b">Confirmed S455 refund 2 (£)</label>
+        <input id="s455b" type="number" step="0.01" value="6858.80" />
+      </div>
+      <div class="col-4">
+        <label for="s455total">Historic S455 total (£)</label>
+        <input id="s455total" type="number" step="0.01" value="24273.50" />
+      </div>
+    </div>
+    <div class="callout">
+      Known S455 refunds are treated as <strong>company cash</strong>. They do not reduce the DLA again and they do not increase the DLA when HMRC pays them back.
+    </div>
+
+    <h2>4. Bitcoin Growth Assumptions</h2>
+    <div class="grid">
+      <div class="col-4">
+        <label for="bear">Bear annual growth (%)</label>
+        <input id="bear" type="number" step="0.01" value="21" />
+      </div>
+      <div class="col-4">
+        <label for="base">Base annual growth (%)</label>
+        <input id="base" type="number" step="0.01" value="29" />
+      </div>
+      <div class="col-4">
+        <label for="bull">Bull annual growth (%)</label>
+        <input id="bull" type="number" step="0.01" value="37" />
+      </div>
+    </div>
+    <p class="small">These are scenario assumptions only. They are not guaranteed returns.</p>
+
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-primary" id="calc">Calculate</button>
+      <button class="btn btn-ghost" id="reset">Reset</button>
+    </div>
+
+    <h2>5. Your Selected Strategy</h2>
+    <div class="grid">
+      <div class="col-6">
+        <div class="result">
+          <h3>DLA Results</h3>
+          <div class="stat"><span>Starting DLA after lump sum</span><strong id="startDlaOut">—</strong></div>
+          <div class="stat"><span>Monthly DLA repayment</span><strong id="mDlaOut">—</strong></div>
+          <div class="stat"><span>Months to clear</span><strong id="monthsOut">—</strong></div>
+          <div class="stat"><span>Years & months</span><strong id="yearsOut">—</strong></div>
+          <div class="stat"><span>Approx. payoff date</span><strong id="payoffOut">—</strong></div>
+          <div class="stat"><span>Total personal DLA cash paid</span><strong id="dlaPaidOut">—</strong></div>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <div class="result">
+          <h3>BTC Opportunity Cost</h3>
+          <div class="stat"><span>Monthly to BTC</span><strong id="mBtcOut">—</strong></div>
+          <div class="stat"><span>BTC contribution period</span><strong id="btcPeriodOut">—</strong></div>
+          <div class="stat"><span>Total BTC contributions</span><strong id="btcContribOut">—</strong></div>
+          <div class="stat"><span>Bear projected value</span><strong id="btcBearOut">—</strong></div>
+          <div class="stat"><span>Base projected value</span><strong id="btcBaseOut">—</strong></div>
+          <div class="stat"><span>Bull projected value</span><strong id="btcBullOut">—</strong></div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="result">
+          <h3>S455 Position</h3>
+          <div class="stat"><span>Known S455 refunds</span><strong id="knownS455Out">—</strong></div>
+          <div class="stat"><span>Estimated historic S455 still unrecovered</span><strong id="remainS455Out">—</strong></div>
+          <div class="stat"><span>Company cash from known S455 refunds</span><strong id="companyCashOut">—</strong></div>
+          <div class="stat"><span>Possible additional S455 if remaining DLA qualifies</span><strong id="futureS455Out">—</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <h2>6. Strategy Comparison</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>DLA / month</th>
+            <th>BTC / month</th>
+            <th>DLA clear</th>
+            <th>Time</th>
+            <th>BTC contributed</th>
+            <th>Bear</th>
+            <th>Base</th>
+            <th>Bull</th>
+          </tr>
+        </thead>
+        <tbody id="comparisonBody"></tbody>
+      </table>
+    </div>
+
+    <footer>
+      Planning tool only. DLA calculations assume no additional DLA drawings and no interest is added to the DLA balance. BTC values use simple monthly compounding of regular monthly contributions. S455 calculations are illustrative: actual entitlement and claim timing depend on the underlying historic loans and Workwell/HMRC treatment. Known S455 refunds remain company assets until legitimately extracted or distributed.
+    </footer>
+  </div>
+</div>
+
+<script>
+  const fmt = n => Number(n).toLocaleString('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:2});
+  const round2 = n => Math.round((n + Number.EPSILON)*100)/100;
+
+  const now = new Date();
+  const currentYM = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('startMonth').value = currentYM;
+
+  function addMonths(date, months){
+    const d = new Date(date.getFullYear(), date.getMonth(), 1);
+    d.setMonth(d.getMonth()+months);
+    return d;
+  }
+
+  function ymToDate(val){
+    const [y,m] = val.split('-').map(Number);
+    return new Date(y,m-1,1);
+  }
+
+  function loanCalc(balance, monthly, lump){
+    let rem = Math.max(0, round2(balance-lump));
+    if(rem===0) return {months:0,totalPaid:lump,remaining:0};
+    if(monthly<=0) return {error:'Monthly DLA payment must be greater than £0'};
+    const months = Math.ceil(rem/monthly);
+    return {months,totalPaid:round2(lump+rem),remaining:0};
+  }
+
+  function futureValueDCA(monthly, annualPct, months){
+    const m = Math.max(0, monthly);
+    const n = Math.max(0, months);
+    const annual = Math.max(0, annualPct)/100;
+    const r = annual/12;
+    if(n===0 || m===0) return 0;
+    if(r===0) return m*n;
+    return m*((Math.pow(1+r,n)-1)/r);
+  }
+
+  function strategy(name, dlaMonthly, cfg){
+    const mDla = Math.min(Math.max(0,dlaMonthly),cfg.budget);
+    const mBtc = Math.max(0, round2(cfg.budget-mDla));
+    const L = loanCalc(cfg.dla,mDla,cfg.lump);
+    if(L.error) return {name,error:L.error,mDla,mBtc};
+    const payoff = addMonths(cfg.start,L.months);
+    const years = Math.floor(L.months/12);
+    const extra = L.months%12;
+    return {
+      name,mDla,mBtc,
+      months:L.months,
+      years,extra,
+      payoff,
+      btcContrib:round2(mBtc*L.months),
+      bear:futureValueDCA(mBtc,cfg.bear,L.months),
+      base:futureValueDCA(mBtc,cfg.base,L.months),
+      bull:futureValueDCA(mBtc,cfg.bull,L.months)
+    };
+  }
+
+  function readCfg(){
+    return {
+      dla:Number(document.getElementById('dla').value||0),
+      lump:Number(document.getElementById('lump').value||0),
+      budget:Number(document.getElementById('budget').value||0),
+      dlaMonthly:Number(document.getElementById('dlaMonthly').value||0),
+      start:ymToDate(document.getElementById('startMonth').value||currentYM),
+      s455a:Number(document.getElementById('s455a').value||0),
+      s455b:Number(document.getElementById('s455b').value||0),
+      s455total:Number(document.getElementById('s455total').value||0),
+      bear:Number(document.getElementById('bear').value||0),
+      base:Number(document.getElementById('base').value||0),
+      bull:Number(document.getElementById('bull').value||0)
+    };
+  }
+
+  function updateLive(){
+    const budget = Number(document.getElementById('budget').value||0);
+    let d = Number(document.getElementById('dlaMonthly').value||0);
+    d = Math.max(0,Math.min(d,budget));
+    document.getElementById('monthlyDlaLive').textContent = fmt(d);
+    document.getElementById('monthlyBtcLive').textContent = fmt(Math.max(0,budget-d));
+    const pct = budget > 0 ? Math.round((d/budget)*100) : 0;
+    const slider = document.getElementById('allocationSlider');
+    if(slider && document.activeElement !== slider) slider.value = pct;
+    const alloc = document.getElementById('allocationLive');
+    if(alloc) alloc.textContent = `DLA ${pct}% / BTC ${100-pct}%`;
+  }
+
+  function calc(){
+    const c = readCfg();
+    const selected = strategy('Your split',c.dlaMonthly,c);
+
+    const startAfterLump = Math.max(0,round2(c.dla-c.lump));
+    document.getElementById('startDlaOut').textContent = fmt(startAfterLump);
+    document.getElementById('mDlaOut').textContent = fmt(selected.mDla);
+    document.getElementById('mBtcOut').textContent = fmt(selected.mBtc);
+
+    if(selected.error){
+      document.getElementById('monthsOut').textContent = '—';
+      document.getElementById('yearsOut').textContent = selected.error;
+      document.getElementById('payoffOut').textContent = '—';
+      document.getElementById('dlaPaidOut').textContent = '—';
+      document.getElementById('btcPeriodOut').textContent = '—';
+      document.getElementById('btcContribOut').textContent = '—';
+      document.getElementById('btcBearOut').textContent = '—';
+      document.getElementById('btcBaseOut').textContent = '—';
+      document.getElementById('btcBullOut').textContent = '—';
+    } else {
+      document.getElementById('monthsOut').textContent = `${selected.months} months`;
+      document.getElementById('yearsOut').textContent = `${selected.years} yrs ${selected.extra} mths`;
+      document.getElementById('payoffOut').textContent = selected.payoff.toLocaleString('en-GB',{month:'short',year:'numeric'});
+      document.getElementById('dlaPaidOut').textContent = fmt(c.dla);
+      document.getElementById('btcPeriodOut').textContent = `${selected.months} months (${selected.years} yrs ${selected.extra} mths)`;
+      document.getElementById('btcContribOut').textContent = fmt(selected.btcContrib);
+      document.getElementById('btcBearOut').textContent = fmt(selected.bear);
+      document.getElementById('btcBaseOut').textContent = fmt(selected.base);
+      document.getElementById('btcBullOut').textContent = fmt(selected.bull);
+    }
+
+    const known = round2(c.s455a+c.s455b);
+    const remainingHist = Math.max(0,round2(c.s455total-known));
+    const futureIllustrative = Math.min(remainingHist, round2(startAfterLump*0.325));
+    document.getElementById('knownS455Out').textContent = fmt(known);
+    document.getElementById('remainS455Out').textContent = fmt(remainingHist);
+    document.getElementById('companyCashOut').textContent = fmt(known);
+    document.getElementById('futureS455Out').textContent = fmt(futureIllustrative);
+
+    const presets = [
+      strategy('Aggressive DLA',Math.min(c.budget,c.budget),c),
+      strategy('Balanced',Math.min(500,c.budget),c),
+      strategy('BTC focused',Math.min(100,c.budget),c),
+      selected
+    ];
+
+    const body = document.getElementById('comparisonBody');
+    body.innerHTML = '';
+    presets.forEach(s=>{
+      const tr = document.createElement('tr');
+      if(s.error){
+        tr.innerHTML = `<td>${s.name}</td><td>${fmt(s.mDla)}</td><td>${fmt(s.mBtc)}</td><td colspan="6">${s.error}</td>`;
+      } else {
+        tr.innerHTML = `
+          <td>${s.name}</td>
+          <td>${fmt(s.mDla)}</td>
+          <td>${fmt(s.mBtc)}</td>
+          <td>${s.payoff.toLocaleString('en-GB',{month:'short',year:'numeric'})}</td>
+          <td>${s.years}y ${s.extra}m</td>
+          <td>${fmt(s.btcContrib)}</td>
+          <td>${fmt(s.bear)}</td>
+          <td>${fmt(s.base)}</td>
+          <td>${fmt(s.bull)}</td>`;
+      }
+      body.appendChild(tr);
+    });
+  }
+
+  document.getElementById('budget').addEventListener('input',()=>{updateLive();calc();});
+  document.getElementById('dlaMonthly').addEventListener('input',()=>{updateLive();calc();});
+  document.getElementById('allocationSlider').addEventListener('input',()=>{
+    const budget = Number(document.getElementById('budget').value||0);
+    const pct = Number(document.getElementById('allocationSlider').value||0);
+    const d = round2(budget * (pct/100));
+    document.getElementById('dlaMonthly').value = d;
+    document.getElementById('allocationLive').textContent = `DLA ${pct}% / BTC ${100-pct}%`;
+    updateLive();
+    calc();
+  });
+  ['dla','lump','startMonth','s455a','s455b','s455total','bear','base','bull'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',calc);
+  });
+
+  document.getElementById('calc').addEventListener('click',calc);
+  document.getElementById('reset').addEventListener('click',()=>{
+    document.getElementById('dla').value = 35380;
+    document.getElementById('lump').value = 0;
+    document.getElementById('budget').value = 1088.58;
+    document.getElementById('dlaMonthly').value = 100;
+    document.getElementById('allocationSlider').value = 9;
+    document.getElementById('startMonth').value = currentYM;
+    document.getElementById('s455a').value = 6303.70;
+    document.getElementById('s455b').value = 6858.80;
+    document.getElementById('s455total').value = 24273.50;
+    document.getElementById('bear').value = 21;
+    document.getElementById('base').value = 29;
+    document.getElementById('bull').value = 37;
+    updateLive();
+    calc();
+  });
+
+  updateLive();
+  calc();
+</script>
+</body>
+</html>
