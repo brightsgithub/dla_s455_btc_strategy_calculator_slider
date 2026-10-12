@@ -1,463 +1,173 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DLA, S455 & BTC Strategy Calculator</title>
-  <style>
-    :root{
-      --bg:#0f172a;
-      --panel:#111827;
-      --panel2:#0b1220;
-      --muted:#94a3b8;
-      --text:#e5e7eb;
-      --brand:#22d3ee;
-      --accent:#a78bfa;
-      --ok:#34d399;
-      --warn:#fbbf24;
-      --bad:#fb7185;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:linear-gradient(135deg,var(--bg),#020617);
-      color:var(--text);
-    }
-    .wrap{max-width:1120px;margin:32px auto;padding:20px}
-    .card{
-      background:rgba(17,24,39,.82);
-      border:1px solid rgba(255,255,255,.07);
-      border-radius:20px;
-      padding:22px;
-      box-shadow:0 12px 34px rgba(0,0,0,.35);
-      backdrop-filter:blur(8px);
-    }
-    h1{font-size:clamp(24px,3.4vw,34px);margin:0 0 8px}
-    h2{font-size:clamp(18px,2.5vw,24px);margin:22px 0 10px}
-    h3{margin:0 0 8px;font-size:17px}
-    p{line-height:1.5}
-    .lead{margin:0;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-    .col-3{grid-column:span 3}
-    .col-4{grid-column:span 4}
-    .col-6{grid-column:span 6}
-    .col-8{grid-column:span 8}
-    .col-12{grid-column:span 12}
-    label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
-    input,button{
-      width:100%;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:var(--panel2);
-      color:var(--text);
-      font-size:16px;
-    }
-    input[type=range]{padding:0;border:none;background:transparent}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{cursor:pointer;border:none}
-    .btn-primary{
-      background:linear-gradient(90deg,var(--brand),var(--accent));
-      color:#001018;
-      font-weight:800;
-    }
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.13)}
-    .chip{
-      width:auto;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:var(--panel2);
-      color:var(--text);
-      cursor:pointer;
-    }
-    .chip.active{border-color:var(--accent);background:#1f2a44}
-    .muted{color:var(--muted)}
-    .small{font-size:13px;color:var(--muted);line-height:1.45}
-    .splitLive{color:var(--accent);font-weight:800}
-    .result{
-      background:#0a1426;
-      border:1px solid rgba(255,255,255,.07);
-      border-radius:16px;
-      padding:16px;
-    }
-    .stat{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:12px;
-      padding:8px 0;
-      border-bottom:1px dashed rgba(255,255,255,.08);
-    }
-    .stat:last-child{border-bottom:none}
-    .ok{color:var(--ok)}
-    .warn{color:var(--warn)}
-    .bad{color:var(--bad)}
-    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
-    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:right}
-    th:first-child,td:first-child{text-align:left}
-    th{color:#cbd5e1}
-    .table-wrap{overflow-x:auto}
-    footer{margin-top:20px;font-size:12.5px;color:var(--muted);line-height:1.5}
-    .callout{
-      margin-top:14px;
-      border-left:4px solid var(--brand);
-      background:rgba(34,211,238,.06);
-      padding:12px 14px;
-      border-radius:10px;
-      color:#dbeafe;
-    }
-    @media(max-width:900px){
-      .col-3,.col-4,.col-6,.col-8{grid-column:span 12}
-    }
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Loan Repayment & Bitcoin Strategy Calculator</title>
+    <style>
+        :root{color-scheme:dark;--bg:#0b1220;--panel:#101b2d;--line:#27354a;--text:#e8edf7;--muted:#9aabc2;--purple:#b48cff;--orange:#f7931a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:1200px;margin:auto;padding:28px}h1{font-size:clamp(28px,4vw,46px);margin:0 0 8px}h2{font-size:24px;margin:32px 0 14px}h3{margin:0 0 16px}.sub,.hint{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{border:1px solid var(--line);background:var(--panel);padding:20px;border-radius:18px}.field label{display:block;color:var(--muted);margin-bottom:8px}input[type=number],input[type=date],select{width:100%;background:#0a1323;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit}input[type=range]{width:100%;accent-color:#1682ff}#allocation{appearance:none;-webkit-appearance:none;display:block;height:9px;border-radius:999px;border:1px solid #486078;background:linear-gradient(to right,#1682ff 0%,#1682ff 50%,#f7931a 50%,#f7931a 100%);cursor:pointer;margin:14px 0 10px}#allocation::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#1682ff;border:2px solid #f5f8ff;box-shadow:0 0 0 2px #13263d;cursor:grab}#allocation::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:#1682ff;border:2px solid #f5f8ff;cursor:grab}.metrics{display:flex;justify-content:space-between;gap:16px}.metric .metric-label{display:block;color:var(--text);font-size:18px;font-weight:750}.allocation-heading{text-align:center;font-size:20px;font-weight:800;color:var(--text);margin:24px 0 12px}.allocation-reset-wrap{display:flex;justify-content:center;margin:-2px 0 18px}#resetAllocation{border:1px solid #53617a;background:transparent;color:var(--text);border-radius:9px;padding:8px 14px;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif;cursor:pointer}#resetAllocation:hover{background:#1b2b44;border-color:var(--purple)}#resetAllocation:focus-visible{outline:2px solid var(--purple);outline-offset:3px}.metric strong{display:block;color:var(--purple);font-size:22px;margin-top:7px}.right{text-align:right}.split{font-weight:800;color:var(--purple);text-align:center}.row{display:flex;justify-content:space-between;gap:15px;padding:11px 0;border-bottom:1px dashed var(--line)}.row:last-child{border-bottom:0}.row strong{text-align:right}.orange{color:var(--orange)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:25px}button{cursor:pointer;border:1px solid var(--line);border-radius:12px;background:#19273c;color:var(--text);font:inherit;padding:11px 17px}button.active,button.primary{background:#693fc2;border-color:#9062ee}button:disabled{opacity:.5;cursor:not-allowed}.hidden{display:none}.importButton{display:inline-flex;align-items:center;cursor:pointer;border:1px solid var(--line);border-radius:12px;background:#19273c;color:var(--text);padding:11px 17px}.importButton:hover{background:#263650}.chart{width:100%;height:300px;border:1px solid var(--line);border-radius:12px;background:#0b1424}.legend{color:var(--muted);font-size:13px;margin:10px 0}.notice{border-left:3px solid var(--orange);padding:12px 15px;background:#241e18;color:#f7dfbb;margin:16px 0}.small{font-size:13px}.status{color:var(--muted);margin:12px 0}.foot{margin:28px 0;color:var(--muted);font-size:13px}@media(max-width:750px){.grid,.grid.two{grid-template-columns:1fr}.wrap{padding:16px}.metrics{flex-wrap:wrap}}
+        .forecast-scenario{border:1px solid transparent;border-radius:13px;padding:5px 15px;margin-top:12px}.forecast-scenario .row{padding:11px 0}.forecast-scenario .row:last-child{border-bottom:0}.forecast-scenario .gain strong{font-size:19px}.forecast-scenario.bear{background:rgba(150,54,58,.28);border-color:rgba(238,94,98,.24)}.forecast-scenario.bear .gain strong{color:#ff777b}.forecast-scenario.base{background:rgba(27,94,162,.30);border-color:rgba(70,153,239,.26)}.forecast-scenario.base .gain strong{color:#55b4ff}.forecast-scenario.bull{background:rgba(26,110,58,.30);border-color:rgba(72,195,107,.25)}.forecast-scenario.bull .gain strong{color:#76eaa0}
+    </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card">
-    <h1>DLA, S455 & BTC Strategy Calculator</h1>
-    <p class="lead">Compare paying your Director's Loan faster versus keeping the DLA payment low and directing the rest of your monthly budget into Bitcoin.</p>
-
-    <h2>1. Current DLA Position</h2>
-    <div class="grid">
-      <div class="col-4">
-        <label for="dla">Starting DLA balance (£)</label>
-        <input id="dla" type="number" step="0.01" value="35380" />
-      </div>
-      <div class="col-4">
-        <label for="lump">Optional one-off DLA payment (£)</label>
-        <input id="lump" type="number" step="0.01" value="0" />
-      </div>
-      <div class="col-4">
-        <label for="startMonth">Start month</label>
-        <input id="startMonth" type="month" />
-      </div>
-    </div>
-
-    <h2>2. Monthly Budget Split</h2>
-    <div class="grid">
-      <div class="col-4">
-        <label for="budget">Total monthly budget (£)</label>
-        <input id="budget" type="number" step="0.01" value="1088.58" />
-      </div>
-      <div class="col-8">
-        <label for="dlaMonthly">Monthly amount to DLA (£)</label>
-        <input id="dlaMonthly" type="number" step="0.01" value="100" />
-        <div class="small" style="margin-top:6px">The remainder of the monthly budget is automatically allocated to BTC.</div>
-      </div>
-      <div class="col-6">
-        <label>Monthly to DLA</label>
-        <div id="monthlyDlaLive" class="splitLive">£100.00</div>
-      </div>
-      <div class="col-6">
-        <label>Monthly to BTC</label>
-        <div id="monthlyBtcLive" class="splitLive">£988.58</div>
-      </div>
-    </div>
-
-    <div style="margin-top:14px">
-      <label for="allocationSlider">DLA ↔ BTC allocation</label>
-      <input id="allocationSlider" type="range" min="0" max="100" step="1" value="9" />
-      <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px">
-        <span class="small">More to BTC</span>
-        <span id="allocationLive" class="splitLive">DLA 9% / BTC 91%</span>
-        <span class="small">More to DLA</span>
-      </div>
-    </div>
-
-    <h2>3. S455 Position</h2>
-    <div class="grid">
-      <div class="col-4">
-        <label for="s455a">Confirmed S455 refund 1 (£)</label>
-        <input id="s455a" type="number" step="0.01" value="6303.70" />
-      </div>
-      <div class="col-4">
-        <label for="s455b">Confirmed S455 refund 2 (£)</label>
-        <input id="s455b" type="number" step="0.01" value="6858.80" />
-      </div>
-      <div class="col-4">
-        <label for="s455total">Historic S455 total (£)</label>
-        <input id="s455total" type="number" step="0.01" value="24273.50" />
-      </div>
-    </div>
-    <div class="callout">
-      Known S455 refunds are treated as <strong>company cash</strong>. They do not reduce the DLA again and they do not increase the DLA when HMRC pays them back.
-    </div>
-
-    <h2>4. Bitcoin Growth Assumptions</h2>
-    <div class="grid">
-      <div class="col-4">
-        <label for="bear">Bear annual growth (%)</label>
-        <input id="bear" type="number" step="0.01" value="21" />
-      </div>
-      <div class="col-4">
-        <label for="base">Base annual growth (%)</label>
-        <input id="base" type="number" step="0.01" value="29" />
-      </div>
-      <div class="col-4">
-        <label for="bull">Bull annual growth (%)</label>
-        <input id="bull" type="number" step="0.01" value="37" />
-      </div>
-    </div>
-    <p class="small">These are scenario assumptions only. They are not guaranteed returns.</p>
-
-    <div class="row" style="margin-top:16px">
-      <button class="btn btn-primary" id="calc">Calculate</button>
-      <button class="btn btn-ghost" id="reset">Reset</button>
-    </div>
-
-    <h2>5. Your Selected Strategy</h2>
-    <div class="grid">
-      <div class="col-6">
-        <div class="result">
-          <h3>DLA Results</h3>
-          <div class="stat"><span>Starting DLA after lump sum</span><strong id="startDlaOut">—</strong></div>
-          <div class="stat"><span>Monthly DLA repayment</span><strong id="mDlaOut">—</strong></div>
-          <div class="stat"><span>Months to clear</span><strong id="monthsOut">—</strong></div>
-          <div class="stat"><span>Years & months</span><strong id="yearsOut">—</strong></div>
-          <div class="stat"><span>Approx. payoff date</span><strong id="payoffOut">—</strong></div>
-          <div class="stat"><span>Total personal DLA cash paid</span><strong id="dlaPaidOut">—</strong></div>
+    <main class="wrap">
+        <h1>Loan Repayment & <span class="orange">Bitcoin</span> Strategy Calculator</h1>
+        <p class="sub">Compare paying down a loan faster with investing the remainder of your monthly budget in Bitcoin. Explore forecasts or replay the same repayment period using historical BTC/GBP prices.</p>
+        <h2>1. Current Loan Position</h2>
+        <div class="grid">
+            <div class="field">
+                <label for="loan">Outstanding loan balance (£)</label>
+                <input id="loan" type="number" min="0" step="100" value="10000">
+            </div>
+            <div class="field">
+                <label for="lump">Optional lump-sum repayment (£)</label>
+                <input id="lump" type="number" min="0" step="100" value="0">
+            </div>
+            <div class="field">
+                <label for="start">Forecast start month</label>
+                <input id="start" type="date" value="2026-10-01">
+            </div>
         </div>
-      </div>
-
-      <div class="col-6">
-        <div class="result">
-          <h3>BTC Opportunity Cost</h3>
-          <div class="stat"><span>Monthly to BTC</span><strong id="mBtcOut">—</strong></div>
-          <div class="stat"><span>BTC contribution period</span><strong id="btcPeriodOut">—</strong></div>
-          <div class="stat"><span>Total BTC contributions</span><strong id="btcContribOut">—</strong></div>
-          <div class="stat"><span>Bear projected value</span><strong id="btcBearOut">—</strong></div>
-          <div class="stat"><span>Base projected value</span><strong id="btcBaseOut">—</strong></div>
-          <div class="stat"><span>Bull projected value</span><strong id="btcBullOut">—</strong></div>
+        <h2>2. Monthly Budget Split</h2>
+        <div class="grid two">
+            <div class="field">
+                <label for="budget">Total monthly budget (£)</label>
+                <input id="budget" type="number" min="0" step="100" value="500">
+            </div>
+            <div class="field">
+                <label for="repay">Monthly amount to loan (£)</label>
+                <input id="repay" type="number" min="0" step="100" value="250">
+                <p class="hint small">The remainder of your monthly budget is automatically allocated to BTC.</p>
+            </div>
         </div>
-      </div>
-
-      <div class="col-12">
-        <div class="result">
-          <h3>S455 Position</h3>
-          <div class="stat"><span>Known S455 refunds</span><strong id="knownS455Out">—</strong></div>
-          <div class="stat"><span>Estimated historic S455 still unrecovered</span><strong id="remainS455Out">—</strong></div>
-          <div class="stat"><span>Company cash from known S455 refunds</span><strong id="companyCashOut">—</strong></div>
-          <div class="stat"><span>Possible additional S455 if remaining DLA qualifies</span><strong id="futureS455Out">—</strong></div>
+        <div class="metrics">
+            <div class="metric"><span class="metric-label">Monthly to loan</span><strong id="loanMetric"></strong></div>
+            <div class="metric right"><span class="metric-label">Monthly to BTC</span><strong id="btcMetric"></strong></div>
         </div>
-      </div>
-    </div>
-
-    <h2>6. Strategy Comparison</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Strategy</th>
-            <th>DLA / month</th>
-            <th>BTC / month</th>
-            <th>DLA clear</th>
-            <th>Time</th>
-            <th>BTC contributed</th>
-            <th>Bear</th>
-            <th>Base</th>
-            <th>Bull</th>
-          </tr>
-        </thead>
-        <tbody id="comparisonBody"></tbody>
-      </table>
-    </div>
-
-    <footer>
-      Planning tool only. DLA calculations assume no additional DLA drawings and no interest is added to the DLA balance. BTC values use simple monthly compounding of regular monthly contributions. S455 calculations are illustrative: actual entitlement and claim timing depend on the underlying historic loans and Workwell/HMRC treatment. Known S455 refunds remain company assets until legitimately extracted or distributed.
-    </footer>
-  </div>
-</div>
-
-<script>
-  const fmt = n => Number(n).toLocaleString('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:2});
-  const round2 = n => Math.round((n + Number.EPSILON)*100)/100;
-
-  const now = new Date();
-  const currentYM = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  document.getElementById('startMonth').value = currentYM;
-
-  function addMonths(date, months){
-    const d = new Date(date.getFullYear(), date.getMonth(), 1);
-    d.setMonth(d.getMonth()+months);
-    return d;
-  }
-
-  function ymToDate(val){
-    const [y,m] = val.split('-').map(Number);
-    return new Date(y,m-1,1);
-  }
-
-  function loanCalc(balance, monthly, lump){
-    let rem = Math.max(0, round2(balance-lump));
-    if(rem===0) return {months:0,totalPaid:lump,remaining:0};
-    if(monthly<=0) return {error:'Monthly DLA payment must be greater than £0'};
-    const months = Math.ceil(rem/monthly);
-    return {months,totalPaid:round2(lump+rem),remaining:0};
-  }
-
-  function futureValueDCA(monthly, annualPct, months){
-    const m = Math.max(0, monthly);
-    const n = Math.max(0, months);
-    const annual = Math.max(0, annualPct)/100;
-    const r = annual/12;
-    if(n===0 || m===0) return 0;
-    if(r===0) return m*n;
-    return m*((Math.pow(1+r,n)-1)/r);
-  }
-
-  function strategy(name, dlaMonthly, cfg){
-    const mDla = Math.min(Math.max(0,dlaMonthly),cfg.budget);
-    const mBtc = Math.max(0, round2(cfg.budget-mDla));
-    const L = loanCalc(cfg.dla,mDla,cfg.lump);
-    if(L.error) return {name,error:L.error,mDla,mBtc};
-    const payoff = addMonths(cfg.start,L.months);
-    const years = Math.floor(L.months/12);
-    const extra = L.months%12;
-    return {
-      name,mDla,mBtc,
-      months:L.months,
-      years,extra,
-      payoff,
-      btcContrib:round2(mBtc*L.months),
-      bear:futureValueDCA(mBtc,cfg.bear,L.months),
-      base:futureValueDCA(mBtc,cfg.base,L.months),
-      bull:futureValueDCA(mBtc,cfg.bull,L.months)
-    };
-  }
-
-  function readCfg(){
-    return {
-      dla:Number(document.getElementById('dla').value||0),
-      lump:Number(document.getElementById('lump').value||0),
-      budget:Number(document.getElementById('budget').value||0),
-      dlaMonthly:Number(document.getElementById('dlaMonthly').value||0),
-      start:ymToDate(document.getElementById('startMonth').value||currentYM),
-      s455a:Number(document.getElementById('s455a').value||0),
-      s455b:Number(document.getElementById('s455b').value||0),
-      s455total:Number(document.getElementById('s455total').value||0),
-      bear:Number(document.getElementById('bear').value||0),
-      base:Number(document.getElementById('base').value||0),
-      bull:Number(document.getElementById('bull').value||0)
-    };
-  }
-
-  function updateLive(){
-    const budget = Number(document.getElementById('budget').value||0);
-    let d = Number(document.getElementById('dlaMonthly').value||0);
-    d = Math.max(0,Math.min(d,budget));
-    document.getElementById('monthlyDlaLive').textContent = fmt(d);
-    document.getElementById('monthlyBtcLive').textContent = fmt(Math.max(0,budget-d));
-    const pct = budget > 0 ? Math.round((d/budget)*100) : 0;
-    const slider = document.getElementById('allocationSlider');
-    if(slider && document.activeElement !== slider) slider.value = pct;
-    const alloc = document.getElementById('allocationLive');
-    if(alloc) alloc.textContent = `DLA ${pct}% / BTC ${100-pct}%`;
-  }
-
-  function calc(){
-    const c = readCfg();
-    const selected = strategy('Your split',c.dlaMonthly,c);
-
-    const startAfterLump = Math.max(0,round2(c.dla-c.lump));
-    document.getElementById('startDlaOut').textContent = fmt(startAfterLump);
-    document.getElementById('mDlaOut').textContent = fmt(selected.mDla);
-    document.getElementById('mBtcOut').textContent = fmt(selected.mBtc);
-
-    if(selected.error){
-      document.getElementById('monthsOut').textContent = '—';
-      document.getElementById('yearsOut').textContent = selected.error;
-      document.getElementById('payoffOut').textContent = '—';
-      document.getElementById('dlaPaidOut').textContent = '—';
-      document.getElementById('btcPeriodOut').textContent = '—';
-      document.getElementById('btcContribOut').textContent = '—';
-      document.getElementById('btcBearOut').textContent = '—';
-      document.getElementById('btcBaseOut').textContent = '—';
-      document.getElementById('btcBullOut').textContent = '—';
-    } else {
-      document.getElementById('monthsOut').textContent = `${selected.months} months`;
-      document.getElementById('yearsOut').textContent = `${selected.years} yrs ${selected.extra} mths`;
-      document.getElementById('payoffOut').textContent = selected.payoff.toLocaleString('en-GB',{month:'short',year:'numeric'});
-      document.getElementById('dlaPaidOut').textContent = fmt(c.dla);
-      document.getElementById('btcPeriodOut').textContent = `${selected.months} months (${selected.years} yrs ${selected.extra} mths)`;
-      document.getElementById('btcContribOut').textContent = fmt(selected.btcContrib);
-      document.getElementById('btcBearOut').textContent = fmt(selected.bear);
-      document.getElementById('btcBaseOut').textContent = fmt(selected.base);
-      document.getElementById('btcBullOut').textContent = fmt(selected.bull);
-    }
-
-    const known = round2(c.s455a+c.s455b);
-    const remainingHist = Math.max(0,round2(c.s455total-known));
-    const futureIllustrative = Math.min(remainingHist, round2(startAfterLump*0.325));
-    document.getElementById('knownS455Out').textContent = fmt(known);
-    document.getElementById('remainS455Out').textContent = fmt(remainingHist);
-    document.getElementById('companyCashOut').textContent = fmt(known);
-    document.getElementById('futureS455Out').textContent = fmt(futureIllustrative);
-
-    const presets = [
-      strategy('Aggressive DLA',Math.min(c.budget,c.budget),c),
-      strategy('Balanced',Math.min(500,c.budget),c),
-      strategy('BTC focused',Math.min(100,c.budget),c),
-      selected
-    ];
-
-    const body = document.getElementById('comparisonBody');
-    body.innerHTML = '';
-    presets.forEach(s=>{
-      const tr = document.createElement('tr');
-      if(s.error){
-        tr.innerHTML = `<td>${s.name}</td><td>${fmt(s.mDla)}</td><td>${fmt(s.mBtc)}</td><td colspan="6">${s.error}</td>`;
-      } else {
-        tr.innerHTML = `
-          <td>${s.name}</td>
-          <td>${fmt(s.mDla)}</td>
-          <td>${fmt(s.mBtc)}</td>
-          <td>${s.payoff.toLocaleString('en-GB',{month:'short',year:'numeric'})}</td>
-          <td>${s.years}y ${s.extra}m</td>
-          <td>${fmt(s.btcContrib)}</td>
-          <td>${fmt(s.bear)}</td>
-          <td>${fmt(s.base)}</td>
-          <td>${fmt(s.bull)}</td>`;
-      }
-      body.appendChild(tr);
-    });
-  }
-
-  document.getElementById('budget').addEventListener('input',()=>{updateLive();calc();});
-  document.getElementById('dlaMonthly').addEventListener('input',()=>{updateLive();calc();});
-  document.getElementById('allocationSlider').addEventListener('input',()=>{
-    const budget = Number(document.getElementById('budget').value||0);
-    const pct = Number(document.getElementById('allocationSlider').value||0);
-    const d = round2(budget * (pct/100));
-    document.getElementById('dlaMonthly').value = d;
-    document.getElementById('allocationLive').textContent = `DLA ${pct}% / BTC ${100-pct}%`;
-    updateLive();
-    calc();
-  });
-  ['dla','lump','startMonth','s455a','s455b','s455total','bear','base','bull'].forEach(id=>{
-    document.getElementById(id).addEventListener('input',calc);
-  });
-
-  document.getElementById('calc').addEventListener('click',calc);
-  document.getElementById('reset').addEventListener('click',()=>{
-    document.getElementById('dla').value = 35380;
-    document.getElementById('lump').value = 0;
-    document.getElementById('budget').value = 1088.58;
-    document.getElementById('dlaMonthly').value = 100;
-    document.getElementById('allocationSlider').value = 9;
-    document.getElementById('startMonth').value = currentYM;
-    document.getElementById('s455a').value = 6303.70;
-    document.getElementById('s455b').value = 6858.80;
-    document.getElementById('s455total').value = 24273.50;
-    document.getElementById('bear').value = 21;
-    document.getElementById('base').value = 29;
-    document.getElementById('bull').value = 37;
-    updateLive();
-    calc();
-  });
-
-  updateLive();
-  calc();
-</script>
+        <p class="allocation-heading">Loan ↔ BTC allocation</p>
+        <div class="allocation-reset-wrap">
+            <button id="resetAllocation" type="button" aria-label="Reset allocation to 50 percent loan and 50 percent Bitcoin">↺ Reset 50/50</button>
+        </div>
+        <input id="allocation" aria-label="Loan allocation percentage" type="range" min="1" max="100" step="1" value="50">
+        <div class="metrics hint"><span>More to BTC</span><span id="split" class="split"></span><span>More to loan</span></div>
+        <h2>3. Bitcoin Growth Assumptions (Forecast)</h2>
+        <div class="grid">
+            <div class="field">
+                <label for="bear">Bear annual growth (%)</label>
+                <input id="bear" type="number" step="1" value="21">
+            </div>
+            <div class="field">
+                <label for="base">Base annual growth (%)</label>
+                <input id="base" type="number" step="1" value="29">
+            </div>
+            <div class="field">
+                <label for="bull">Bull annual growth (%)</label>
+                <input id="bull" type="number" step="1" value="37">
+            </div>
+        </div>
+        <p class="hint small">Defaults inspired by <a href="https://assets.contentstack.io/v3/assets/bltdef7a3f3c28ddd84/bltce23b8c033870436/66e06d0b1bfb50ee6525028d/Saylor_HCW_Presentation_Sep_2024.pdf" target="_blank" rel="noopener noreferrer" style="color:#b48cff">Michael Saylor’s long-term Bitcoin scenarios (2024–2045) ↗</a>:
+            21% bear, 29% base and 37% bull annualised growth. These are hypothetical scenarios, not predictions; applying constant rates is a simplification. Historical mode uses past price data instead.</p>
+        <h2>4. Your Selected Strategy</h2>
+        <div class="grid two">
+            <section class="panel">
+                <h3>Loan Repayment Results</h3>
+                <div id="loanResults"></div>
+            </section>
+            <section class="panel">
+                <h3>Bitcoin Investment Forecast</h3>
+                <div id="btcResults"></div>
+            </section>
+        </div>
+        <h2>5. Historical Bitcoin Backtest</h2>
+        <div class="panel">
+            <p class="hint">Choose only the date your hypothetical strategy started. The calculator automatically uses the repayment duration from your loan slider to determine the historical end date. No initial Bitcoin purchase is assumed.</p>
+            <div class="grid two">
+                <div class="field">
+                    <label for="historic">Historical start date</label>
+                    <input id="historic" type="date" value="2020-01-01" min="2012-01-01">
+                    <p id="historicalDateHint" class="hint small" aria-live="polite">Date limits will update when historical prices are loaded.</p>
+                </div>
+                <div class="field">
+                    <label>Automatically calculated backtest period</label>
+                    <div id="period" style="padding:14px 0;font-weight:700"></div>
+                </div>
+            </div>
+            <div class="tabs">
+                <button class="primary" id="load">Run Historical Backtest</button>
+                <button id="saveOffline">Save offline HTML copy</button>
+                <label class="importButton" for="csvFile">Import BTC/GBP CSV</label>
+                <input id="csvFile" type="file" accept=".csv,text/csv" class="hidden">
+            </div>
+            <div class="status" id="status" role="status">Historical prices can be loaded from a public static dataset. After loading, save an offline copy with the prices embedded.</div>
+            <div id="historyContent" class="hidden">
+                <div class="grid" id="historyMetrics"></div>
+                <h3 style="margin-top:26px">Historical timeline</h3>
+                <input type="range" id="timeline" min="0" max="1" value="1">
+                <div class="metrics"><span class="hint" id="timelineStart"></span><strong id="timelineLabel"></strong><span class="hint" id="timelineEnd"></span></div>
+                <div class="grid two" style="margin-top:18px">
+                    <div class="panel">
+                        <h3>Position at selected month</h3>
+                        <div id="timelineResults"></div>
+                    </div>
+                    <div class="panel">
+                        <h3>Loan vs Bitcoin position</h3>
+                        <svg id="chart" class="chart" viewBox="0 0 800 300" preserveAspectRatio="none" aria-label="Historical BTC value and remaining loan balance chart"></svg>
+                        <p class="legend">🟠 Bitcoin portfolio value &nbsp;&nbsp; 🟣 Remaining loan balance</p>
+                    </div>
+                </div>
+                <p class="hint small" id="source"></p>
+            </div>
+        </div>
+        <p class="foot">For illustration only. Assumes an interest-free loan, monthly payments and BTC purchases at the start of each simulated month, no trading fees, spreads or taxes, and no additional initial BTC holdings. The loan balance is not an investment asset.
+            Bitcoin is volatile and historical returns do not predict future returns. The historical simulation continues monthly BTC purchases only until the loan is cleared, matching the original calculator's contribution period.</p>
+    </main>
+    <script>
+        const $=id=>document.getElementById(id), money=x=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(x),num=id=>Math.max(0,Number($(id).value)||0),fmt=d=>d.toLocaleDateString('en-GB',{month:'short',year:'numeric',timeZone:'UTC'}),addMonths=(d,n)=>new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+n,1)),parseDate=s=>new Date(s+'T00:00:00Z');let rows=[],current=null,priceCache=null;
+        function calc(){let balance=Math.max(0,num('loan')-num('lump')),budget=num('budget'),repay=budget>0?Math.min(budget,Math.max(budget*0.01,num('repay'))):0,btc=budget-repay,months=balance===0?0:repay>0?Math.ceil(balance/repay):Infinity;return {balance,budget,repay,btc,months};}
+        function row(k,v){return `<div class="row"><span>${k}</span><strong>${v}</strong></div>`}
+        function update(){const c=calc();syncHistoricalDateBounds(c);const loanPct=c.budget?Math.max(0,Math.min(100,c.repay/c.budget*100)):0;$('allocation').style.background=`linear-gradient(to right,#1682ff 0%,#1682ff ${loanPct}%,#f7931a ${loanPct}%,#f7931a 100%)`;$('loanMetric').textContent=money(c.repay);$('btcMetric').textContent=money(c.btc);$('split').textContent=`Loan ${c.budget?Math.round(c.repay/c.budget*100):0}% / BTC ${c.budget?Math.round(c.btc/c.budget*100):0}%`;let valid=Number.isFinite(c.months),period=valid?`${Math.floor(c.months/12)} yrs ${c.months%12} mths`:'No payoff';let payoff=valid?fmt(addMonths(parseDate($('start').value),c.months)):'Not reached';$('loanResults').innerHTML=row('Starting loan after lump sum',money(c.balance))+row('Monthly loan repayment',money(c.repay))+row('Months to clear',valid?c.months:'Not possible at £0/month')+row('Years & months',period)+row('Approx. payoff date',payoff)+row('Total personal loan cash paid',money(c.balance+Math.min(num('lump'),num('loan'))));let forecastOK=valid;let out=row('Monthly BTC investment',money(c.btc))+row('BTC contribution period',valid?`${c.months} months (${period})`:'No payoff')+row('Total BTC contributions',forecastOK?money(c.btc*c.months):'Not projected');if(valid&&c.months>360)out+='<p class="notice">Long-term illustration: repayment takes more than 30 years. Compounding fixed annual growth rates over this period can produce extremely large, unrealistic figures.</p>';if(!valid)out+='<p class="notice">Enter a positive monthly budget to calculate a payoff-based forecast.</p>'; for(let k of ['bear','base','bull']){let r=num(k)/100,monthly=Math.pow(1+r,1/12)-1,total=0;if(forecastOK){for(let i=0;i<c.months;i++)total=(total+c.btc)*(1+monthly)}out+='<div class="forecast-scenario '+k+'">'+row(k[0].toUpperCase()+k.slice(1)+' projected value',forecastOK?money(total):'Not defined')+'<div class="gain">'+row(k[0].toUpperCase()+k.slice(1)+' projected gain (%)',forecastOK&&c.btc*c.months>0?((total/(c.btc*c.months)-1)*100).toFixed(2)+'%':'N/A')+'</div></div>'} $('btcResults').innerHTML=out;let start=parseDate($('historic').value),end=valid?addMonths(start,c.months):null;$('period').textContent=valid?`${fmt(start)} → ${fmt(end)} (${c.months} months)`:'Set a positive monthly loan repayment';if(current){$('status').textContent='Inputs changed. Load historical prices again to update the backtest.';$('historyContent').classList.add('hidden');current=null}}
+        function syncHistoricalDateBounds(c=calc()){
+         const picker=$('historic'),hint=$('historicalDateHint'),btn=$('load');
+         if(!priceFirst||!priceLast){picker.disabled=false;picker.removeAttribute('max');hint.textContent='Date limits will update when historical prices are loaded.';btn.disabled=false;return}
+         const min=priceFirst;
+         // Backtests sample the starting month and the final payoff month.
+         // The latest allowed start must leave room for all repayment months.
+         const last=parseDate(priceLast),latest=addMonths(last,-c.months),max=key(latest);
+         picker.min=min;picker.max=max;
+         const available=Number.isFinite(c.months)&&max>=min;
+         picker.disabled=!available;btn.disabled=!available;
+         if(!available){hint.textContent=`No complete ${Number.isFinite(c.months)?c.months+'-month':''} backtest fits within the available prices (${priceFirst} to ${priceLast}). Increase your loan repayment or import a longer price history.`;return}
+         if(!picker.value||picker.value<min)picker.value=min;
+         if(picker.value>max)picker.value=max;
+         hint.textContent=`Select ${min} to ${max}. Latest price: ${priceLast}; your ${c.months}-month repayment period must fit entirely within the data.`;
+        }
+        function clampRepay(){let b=num('budget');$('repay').value=(b?Math.min(b,Math.max(b*.01,num('repay'))):0).toFixed(2);$('allocation').value=b?Math.max(1,Math.round(num('repay')/b*100)):1;update()}
+        ['loan','lump','start','bear','base','bull','historic'].forEach(id=>$(id).addEventListener('input',update));$('budget').addEventListener('input',clampRepay);$('repay').addEventListener('input',clampRepay);$('allocation').addEventListener('input',()=>{$('repay').value=(num('budget')*Number($('allocation').value)/100).toFixed(2);update()});
+        $('resetAllocation').addEventListener('click',()=>{$('repay').value=(num('budget')*0.5).toFixed(2);$('allocation').value=50;update()});
+        const key=d=>d.toISOString().slice(0,10),DAY=86400000;
+        // Historical BTC/GBP prices are sourced from a static, public CSV dataset.
+        // An offline export embeds these prices into this very HTML file.
+        const STATIC_CSV_URL='https://raw.githubusercontent.com/typedcypher/historical-bitcoin-prices/main/data/daily_bitcoin_prices.csv';
+        const OFFLINE_PRICES=[];
+        let historicalPrices=OFFLINE_PRICES;
+        let priceFirst='',priceLast='',priceOrigin=OFFLINE_PRICES.length?'Embedded offline dataset':'Public historical dataset';
+        function normalisePriceData(records){let seen=new Map();for(let [date,price] of records){let v=Number(price);if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(v)&&v>0)seen.set(date,v)}return [...seen].sort((a,b)=>a[0].localeCompare(b[0]));}
+        function parsePriceCSV(csv){let lines=csv.replace(/^\uFEFF/,'').trim().split(/\r?\n/);let heads=lines.shift().split(',').map(x=>x.trim().replace(/^"|"$/g,'').toLowerCase());let dateIndex=heads.findIndex(x=>x==='date'||x==='timestamp');let priceIndex=heads.findIndex(x=>['btc_gbp','gbp','price_gbp','btc/gbp','close'].includes(x));if(dateIndex<0||priceIndex<0)throw Error('CSV must contain a Date column and a BTC_GBP, GBP, price_gbp, or close column (prices in GBP).');return normalisePriceData(lines.map(line=>{let c=line.split(',');return [(c[dateIndex]||'').trim(),(c[priceIndex]||'').trim()]}));}
+        function setPrices(prices,origin){if(prices.length<12)throw Error('The historical dataset does not contain enough valid BTC/GBP observations.');historicalPrices=prices;priceFirst=prices[0][0];priceLast=prices[prices.length-1][0];priceOrigin=origin;syncHistoricalDateBounds();try{localStorage.setItem('btcGbpDailyPricesV2',JSON.stringify(prices));localStorage.setItem('btcGbpDailyPricesOriginV2',origin)}catch(e){};$('status').textContent=`${prices.length.toLocaleString()} BTC/GBP prices available (${priceFirst} to ${priceLast}). Source: ${origin}.`}
+        if(historicalPrices.length){setPrices(historicalPrices,priceOrigin)}else{try{let saved=JSON.parse(localStorage.getItem('btcGbpDailyPricesV2')||'[]');if(saved.length)setPrices(normalisePriceData(saved),'Browser cached historical prices')}catch(e){}}
+        async function ensurePrices(){if(historicalPrices.length)return historicalPrices;$('status').textContent='Downloading static historical BTC/GBP price dataset…';let res=await fetch(STATIC_CSV_URL,{cache:'no-cache'});if(!res.ok)throw Error(`Static historical dataset unavailable (HTTP ${res.status}). Import a BTC/GBP CSV instead.`);let prices=parsePriceCSV(await res.text());setPrices(prices,'typedcypher/historical-bitcoin-prices (GitHub; USD/GBP converted from public sources)');return prices;}
+        function atPrice(prices,date){let target=key(date),lo=0,hi=prices.length-1;while(lo<hi){let mid=Math.floor((lo+hi)/2);if(prices[mid][0]<target)lo=mid+1;else hi=mid}let options=[prices[lo],prices[Math.max(0,lo-1)]],best=options.reduce((a,b)=>Math.abs(Date.parse(a[0])-Date.parse(target))<Math.abs(Date.parse(b[0])-Date.parse(target))?a:b);if(Math.abs(Date.parse(best[0])-Date.parse(target))>4*DAY)throw Error('No historical BTC/GBP observation within four days of '+target);return best[1]}
+        function simulate(c,start,prices){let remaining=c.balance,holdings=0,invested=0,paid=0,out=[];for(let i=0;i<=c.months;i++){let d=addMonths(start,i),price=atPrice(prices,d);if(i<c.months){let loanPaid=Math.min(remaining,c.repay);remaining=Math.max(0,remaining-loanPaid);paid+=loanPaid;holdings+=c.btc/price;invested+=c.btc}out.push({date:d,price,remaining,holdings,invested,paid,value:holdings*price})}return out}
+        function render(){if(!rows.length)return;let c=calc(),last=rows[rows.length-1],profit=last.value-last.invested,peak=0,drawdown=0;for(let r of rows){peak=Math.max(peak,r.value);if(peak>0)drawdown=Math.max(drawdown,(peak-r.value)/peak)}$('historyMetrics').innerHTML=[['BTC accumulated',last.holdings.toFixed(8)+' BTC'],['Total BTC invested',money(last.invested)],['Final BTC value',money(last.value)],['BTC profit / loss',money(profit)],['BTC gain / loss (%)',last.invested>0?((profit/last.invested)*100).toFixed(2)+'%':'N/A'],['Final loan balance',money(last.remaining)],['Maximum BTC drawdown',drawdown.toFixed(1)+'%']].map(([k,v])=>`<div class="panel"><div class="hint">${k}</div><div style="font-size:21px;font-weight:750;margin-top:8px">${v}</div></div>`).join('');$('timeline').max=rows.length-1;$('timeline').value=rows.length-1;$('timelineStart').textContent=fmt(rows[0].date);$('timelineEnd').textContent=fmt(last.date);draw();$('historyContent').classList.remove('hidden')}
+        function draw(){let index=Math.min(rows.length-1,Number($('timeline').value)),r=rows[index];$('timelineLabel').textContent=`${fmt(r.date)} · month ${index}`;$('timelineResults').innerHTML=row('BTC/GBP historical price',money(r.price))+row('Loan remaining',money(r.remaining))+row('Loan repayments made',money(r.paid))+row('BTC held',r.holdings.toFixed(8)+' BTC')+row('BTC contributions',money(r.invested))+row('BTC portfolio value',money(r.value))+row('BTC profit / loss',money(r.value-r.invested))+row('BTC gain / loss (%)',r.invested>0?(((r.value-r.invested)/r.invested)*100).toFixed(2)+'%':'N/A');let max=Math.max(1,...rows.map(x=>Math.max(x.value,x.remaining))),path=(field)=>rows.map((x,i)=>`${i?'L':'M'}${(i/(rows.length-1||1)*780+10).toFixed(1)},${(280-x[field]/max*260).toFixed(1)}`).join(' '),x=(index/(rows.length-1||1)*780+10).toFixed(1);$('chart').innerHTML=`<path d="${path('value')}" fill="none" stroke="#f7931a" stroke-width="3"/><path d="${path('remaining')}" fill="none" stroke="#b48cff" stroke-width="3"/><line x1="${x}" x2="${x}" y1="10" y2="290" stroke="#ffffff" stroke-opacity=".5" stroke-dasharray="4 5"/>`}
+        $('timeline').addEventListener('input',draw);
+        $('csvFile').addEventListener('change',async e=>{let file=e.target.files[0];if(!file)return;try{setPrices(parsePriceCSV(await file.text()),`Imported CSV: ${file.name}`);current=null;$('historyContent').classList.add('hidden')}catch(err){$('status').textContent=err.message}e.target.value=''});
+        $('saveOffline').addEventListener('click',async()=>{let btn=$('saveOffline');btn.disabled=true;try{let prices=await ensurePrices();let source=document.documentElement.outerHTML;let packed=JSON.stringify(prices).replace(/</g,'\\u003c');source=source.replace('const OFFLINE_PRICES=[];',`const OFFLINE_PRICES=${packed};`);if(!source.includes(`const OFFLINE_PRICES=${packed};`))throw Error('Could not embed historical prices.');let blob=new Blob(['<!doctype html>\n'+source],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='loan_bitcoin_strategy_calculator_offline.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('status').textContent=`Saved offline HTML with ${prices.length.toLocaleString()} BTC/GBP prices (${priceFirst} to ${priceLast}).`}catch(err){$('status').textContent=err.message}finally{btn.disabled=false}});
+        $('load').addEventListener('click',async()=>{let c=calc(),start=parseDate($('historic').value);if(!Number.isFinite(c.months)){$('status').textContent='Enter a positive monthly budget to calculate a historical backtest.';return}let end=addMonths(start,c.months),now=new Date();if(!priceFirst&&end>now){$('status').textContent=`The full ${c.months}-month backtest would end ${fmt(end)}, beyond today. Select an earlier historical start date.`;return}let btn=$('load');btn.disabled=true;try{let prices=await ensurePrices();start=parseDate($('historic').value);end=addMonths(start,c.months);if(key(start)<priceFirst||key(end)>priceLast)throw Error(`Selected dates fall outside available historical data (${priceFirst} to ${priceLast}). Choose an earlier start date or import newer prices.`);rows=simulate(c,start,prices);current={start,end};render();$('status').textContent=`Backtest complete: ${fmt(start)} to ${fmt(end)} using ${priceOrigin}.`;$('source').textContent=`Source: ${priceOrigin}. Available dates ${priceFirst}–${priceLast}. Uses closest recorded daily BTC/GBP price to the first of each month; data may use derived GBP exchange rates. Data is illustrative and may differ from execution prices.`}catch(e){$('historyContent').classList.add('hidden');$('status').textContent=e.message+' The forecast calculator above remains usable.'}finally{btn.disabled=false}});
+        update();
+    </script>
 </body>
+
 </html>
